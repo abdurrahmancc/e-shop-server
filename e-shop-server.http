@@ -1,6 +1,56 @@
-@e_shop_server_HostAddress = http://localhost:5121
 
-GET {{e_shop_server_HostAddress}}/weatherforecast/
-Accept: application/json
+
+GET http://localhost:5121/
+
+###
+
+
+GET  http://localhost:5121/v1/api/products
+
+
+##
+
+
+POST  http://localhost:5121/v1/api/products
+Content-Type: application/json
+
+{
+  "Name": "Apple Watch Series 6 A2292 (M00D3)",
+  "FullName": "Apple Watch Series 6 A2292 (M00E3LL/A) 44mm Sport Band (GOLD)",
+  "Price": 20,
+  "RegularPrice": 32,
+  "Quantity": 324,
+  "ReviewQuantity": 11,
+  "Category": "smartWatch",
+  "SubCategory": "smartWatch",
+  "Date": "2022-12-08T13:09:29.764Z",
+  "Status": "In Stock",
+  "Review": "11",
+  "Img": ["product1", "product2", "product3", "product4"],
+  "Description": "Lorem ipsum dolor sit amet consectetur...",
+  "Badge": "new",
+  "Model": "MYLfs4/A",
+  "SKU": "BE34fFDJ",
+  "ShortFeatures": [
+    "Apple Watch Series 6 A2292",
+    "LTPO OLED Always-On Retina Display",
+    "Water-Resistant up to 164'",
+    "Generate Your Own ECG",
+    "Fall Detection + SOS Emergency"
+  ],
+  "Specifications": [
+    {
+      "Details": {
+        "basic Info": [
+          { "Processor": "Intel Core i5 8th Gen Processor (3.0GHz up to 4.1GHz)" },
+          { "Ram": "8GB 2666MHz DDR4 RAM" }
+        ]
+      }
+    }
+  ],
+  "UpdatedAt": "2022-12-08T13:09:29.764Z",
+  "CreatedAt": "2022-12-08T13:09:29.764Z"
+}
+
 
 ###
