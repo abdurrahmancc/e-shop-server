@@ -9,19 +9,15 @@ namespace e_shop_server.DTOs
     public class ProductRead
     {
         public Guid _id { get; set; }
-        [Required(ErrorMessage = "Product Name is required")]
+        [Required]
         public string Name { get; set; }
-        [Required(ErrorMessage = "Product price is required")]
+        [Required]
         public int Price { get; set; }
         public int Quantity { get; set; }
         public List<string> Img { get; set; }
         public DateTime UpdatedAt { get; set; }
-        public DateTime CreatedAt { get; set; }
+
     }
 
 
-    public class SpecificationSection
-{
-    public Dictionary<string, List<object>> Details { get; set; }
-}
 }

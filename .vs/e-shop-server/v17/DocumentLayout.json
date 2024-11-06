@@ -3,8 +3,20 @@
   "WorkspaceRootPath": "D:\\My-Test-Project\\e-shop-server\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{89C796D9-D5AC-4B29-941D-374DD8491C9C}|e-shop-server.csproj|d:\\my-test-project\\e-shop-server\\controllers\\weatherforecastcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{89C796D9-D5AC-4B29-941D-374DD8491C9C}|e-shop-server.csproj|solutionrelative:controllers\\weatherforecastcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{AA0B1FE0-43E2-4402-BFB6-CA4CCC5E048B}|e-shop-server.csproj|d:\\my-test-project\\e-shop-server\\models\\productmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{AA0B1FE0-43E2-4402-BFB6-CA4CCC5E048B}|e-shop-server.csproj|solutionrelative:models\\productmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AA0B1FE0-43E2-4402-BFB6-CA4CCC5E048B}|e-shop-server.csproj|d:\\my-test-project\\e-shop-server\\dtos\\productcreate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{AA0B1FE0-43E2-4402-BFB6-CA4CCC5E048B}|e-shop-server.csproj|solutionrelative:dtos\\productcreate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AA0B1FE0-43E2-4402-BFB6-CA4CCC5E048B}|e-shop-server.csproj|d:\\my-test-project\\e-shop-server\\controllers\\productcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{AA0B1FE0-43E2-4402-BFB6-CA4CCC5E048B}|e-shop-server.csproj|solutionrelative:controllers\\productcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AA0B1FE0-43E2-4402-BFB6-CA4CCC5E048B}|e-shop-server.csproj|d:\\my-test-project\\e-shop-server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{AA0B1FE0-43E2-4402-BFB6-CA4CCC5E048B}|e-shop-server.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -14,19 +26,58 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "WeatherForecastController.cs",
-              "DocumentMoniker": "D:\\My-Test-Project\\e-shop-server\\Controllers\\WeatherForecastController.cs",
-              "RelativeDocumentMoniker": "Controllers\\WeatherForecastController.cs",
-              "ToolTip": "D:\\My-Test-Project\\e-shop-server\\Controllers\\WeatherForecastController.cs",
-              "RelativeToolTip": "Controllers\\WeatherForecastController.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAoAAABtAAAA",
+              "DocumentIndex": 3,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\My-Test-Project\\e-shop-server\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "D:\\My-Test-Project\\e-shop-server\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-11-05T08:20:30.118Z",
+              "WhenOpened": "2024-11-06T08:40:47.201Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "ProductCreate.cs",
+              "DocumentMoniker": "D:\\My-Test-Project\\e-shop-server\\DTOs\\ProductCreate.cs",
+              "RelativeDocumentMoniker": "DTOs\\ProductCreate.cs",
+              "ToolTip": "D:\\My-Test-Project\\e-shop-server\\DTOs\\ProductCreate.cs",
+              "RelativeToolTip": "DTOs\\ProductCreate.cs",
+              "ViewState": "AQIAAAcAAAAAAAAAAAAAAA4AAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-11-06T08:06:49.962Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "ProductModel.cs",
+              "DocumentMoniker": "D:\\My-Test-Project\\e-shop-server\\Models\\ProductModel.cs",
+              "RelativeDocumentMoniker": "Models\\ProductModel.cs",
+              "ToolTip": "D:\\My-Test-Project\\e-shop-server\\Models\\ProductModel.cs",
+              "RelativeToolTip": "Models\\ProductModel.cs",
+              "ViewState": "AQIAAB0AAAAAAAAAAAA5wAcAAAABAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-11-06T08:06:29.753Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "ProductController.cs",
+              "DocumentMoniker": "D:\\My-Test-Project\\e-shop-server\\Controllers\\ProductController.cs",
+              "RelativeDocumentMoniker": "Controllers\\ProductController.cs",
+              "ToolTip": "D:\\My-Test-Project\\e-shop-server\\Controllers\\ProductController.cs",
+              "RelativeToolTip": "Controllers\\ProductController.cs",
+              "ViewState": "AQIAAC0AAAAAAAAAAAAowDQAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-11-06T07:56:34.152Z",
               "EditorCaption": ""
             }
           ]

@@ -7,17 +7,23 @@ GET http://localhost:5121/
 
 GET  http://localhost:5121/v1/api/products
 
+###
 
-##
+
+
+GET  http://localhost:5121/v1/api/products/4526bf8e-0377-40e6-99e4-f811ead5e276
+
+###
+
 
 
 POST  http://localhost:5121/v1/api/products
 Content-Type: application/json
 
 {
-  "Name": "Apple Watch Series 6 A2292 (M00D3)",
+  "Name": "",
   "FullName": "Apple Watch Series 6 A2292 (M00E3LL/A) 44mm Sport Band (GOLD)",
-  "Price": 20,
+  "Price": 0,
   "RegularPrice": 32,
   "Quantity": 324,
   "ReviewQuantity": 11,
@@ -52,5 +58,4 @@ Content-Type: application/json
   "CreatedAt": "2022-12-08T13:09:29.764Z"
 }
 
-
-###
+##
