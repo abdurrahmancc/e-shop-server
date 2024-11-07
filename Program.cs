@@ -1,5 +1,4 @@
-
-
+using e_shop_server.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
@@ -12,7 +11,7 @@ builder.Services.Configure<ApiBehaviorOptions>(Options=>{
                 .Where(e=> e.Value != null && e.Value.Errors.Count> 0)
                 .SelectMany(e=> e.Value?.Errors != null ? e.Value.Errors.Select(x=>x.ErrorMessage): new List<string>()).ToList() ;
 
-                return new BadRequestObjectResult(new { Message = "Validation failed", Errors= errors});
+                return new BadRequestObjectResult(ApiResponse<Object>.ErrorResponse(errors, 400, "Validation error"));
     };
 });
 
