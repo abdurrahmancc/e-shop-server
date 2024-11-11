@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 using System.Xml.Linq;
 using e_shop_server.DTOs;
 using e_shop_server.Models;
+using e_shop_server.Services;
 using e_shop_server.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -17,52 +18,25 @@ namespace e_shop_server.Controllers.Products
     public class ProductController : ControllerBase
     {
         private static List<ProductModel> products = new List<ProductModel>();
+        private ProductService _productService;
 
+        public ProductController(ProductService productService){
+            _productService = productService;
+        }
 
         //GET: v1/api/products/getProducts?currentPage=2&pageSize=5 get data with query params
         [HttpGet]
         [Route("getProducts")]
-        public ActionResult GetProducts(int currentPage = 1, int pageSize = 3)
+        public ActionResult GetAllProducts(int currentPage = 1, int pageSize = 3)
         {
-            var totalItems = products.Count;
-            var totalPage = (int)Math.Ceiling((double)totalItems / pageSize);
-            currentPage = Math.Max(1, Math.Min(currentPage, totalPage));
+            var responseData = _productService.GetAllProducts(currentPage, pageSize);
 
-            var skip = (currentPage - 1) * pageSize;
-
-            var productList = products.Skip(skip).Take(pageSize).Select(prod => new ProductRead
-            {
-                _id = prod._id,
-                Name = prod.Name,
-                Price = prod.Price,
-                Quantity = prod.Quantity,
-                Img = prod.Img,
-                UpdatedAt = prod.UpdatedAt
-            }).ToList();
-
-            var pager = new PagerModel
-            {
-                TotalItems = totalItems,
-                CurrentPage = currentPage,
-                PageSize = pageSize,
-                TotalPage = totalPage,
-                StartPage = Math.Max(1, currentPage - 2),
-                EndPage = Math.Min(totalPage, currentPage + 2)
-            };
-
-            var responseData = new ItemsListWithPagination<List<ProductRead>>
-            {
-                ItemsList = productList,
-                Pager = pager
-
-            };
-
-            if(productList == null || !productList.Any())
+            if(responseData.ItemsList == null || !responseData.ItemsList.Any())
             {
                 return NotFound(ApiResponse<Object>.ErrorResponse(new List<string> { $"dose not exit products" }, 404, "Validation failed"));
             }
 
-            return Ok(ApiResponse<ItemsListWithPagination<List<ProductRead>>>.SuccessResponse(responseData, 200, "Get successful"));
+            return Ok(ApiResponse<ItemsListWithPagination<List<ProductReadDto>>>.SuccessResponse(responseData, 200, "Get successful"));
         }
 
 
@@ -80,7 +54,7 @@ namespace e_shop_server.Controllers.Products
                 return NotFound(ApiResponse<object>.ErrorResponse(new List<string> { "product with this id does not exist" }, 404, "Validation failed"));
             }
 
-            var data = new ProductRead
+            var data = new ProductReadDto
             {
                 _id = foundData._id,
                 Name = foundData.Name,
@@ -90,7 +64,7 @@ namespace e_shop_server.Controllers.Products
                 UpdatedAt = foundData.UpdatedAt,
             };
 
-            return Ok(ApiResponse<ProductRead>.SuccessResponse(data, 200, "Get successful"));
+            return Ok(ApiResponse<ProductReadDto>.SuccessResponse(data, 200, "Get successful"));
 
         }
         
@@ -98,7 +72,7 @@ namespace e_shop_server.Controllers.Products
         
         //POST: http://localhost:5121/v1/api/products create a product
         [HttpPost]
-        public IActionResult CreateProducts([FromBody] ProductCreate productData)
+        public IActionResult CreateProducts([FromBody] ProductCreateDto productData)
         {
 
             var newProduct = new ProductModel
@@ -124,7 +98,7 @@ namespace e_shop_server.Controllers.Products
                 CreatedAt = DateTime.UtcNow
             };
 
-            var ProductCreateDto = new ProductCreate
+            var ProductCreateDto = new ProductCreateDto
             {
                 _id = newProduct._id,
                 Name = newProduct.Name,
@@ -149,7 +123,7 @@ namespace e_shop_server.Controllers.Products
 
             products.Add(newProduct);
 
-            return Created($"v1/api/products/{ProductCreateDto._id}", ApiResponse<ProductCreate>.SuccessResponse(ProductCreateDto, 201, "Product create successful"));
+            return Created($"v1/api/products/{ProductCreateDto._id}", ApiResponse<ProductCreateDto>.SuccessResponse(ProductCreateDto, 201, "Product create successful"));
         }
 
 
@@ -164,7 +138,7 @@ namespace e_shop_server.Controllers.Products
                 return NotFound(ApiResponse<Object>.ErrorResponse(new List<string> { $"Product with this {searchData} dose not exit" }, 404, "Validation failed"));
             }
 
-            var result = searchResultProducts.Select(res => new ProductRead
+            var result = searchResultProducts.Select(res => new ProductReadDto
             {
                 _id = res._id,
                 Name = res.Name,
@@ -174,7 +148,7 @@ namespace e_shop_server.Controllers.Products
                 UpdatedAt = res.UpdatedAt,
             }).ToList();
 
-            return Ok(ApiResponse<List<ProductRead>>.SuccessResponse(result, 200, "Success"));
+            return Ok(ApiResponse<List<ProductReadDto>>.SuccessResponse(result, 200, "Success"));
         }
 
 
@@ -190,7 +164,7 @@ namespace e_shop_server.Controllers.Products
                 return NotFound(ApiResponse<Object>.ErrorResponse(new List<string> { $"Product with these ids dose not exit" }, 404, "Validation failed"));
             }
 
-            var result = foundProducts.Select(res => new ProductRead
+            var result = foundProducts.Select(res => new ProductReadDto
             {
                 _id = res._id,
                 Name = res.Name,
@@ -200,7 +174,7 @@ namespace e_shop_server.Controllers.Products
                 UpdatedAt = res.UpdatedAt,
             }).ToList();
 
-            return Ok(ApiResponse<List<ProductRead>>.SuccessResponse(result, 200, "Success"));
+            return Ok(ApiResponse<List<ProductReadDto>>.SuccessResponse(result, 200, "Success"));
         }
 
 
@@ -216,7 +190,7 @@ namespace e_shop_server.Controllers.Products
                 return NotFound(ApiResponse<Object>.ErrorResponse(new List<string> { $"Product with these prices dose not exit" }, 404, "Validation failed"));
 
             }
-            var result = foundProduct.Select(prod => new ProductRead
+            var result = foundProduct.Select(prod => new ProductReadDto
             {
                 _id = prod._id,
                 Name = prod.Name,
@@ -226,7 +200,7 @@ namespace e_shop_server.Controllers.Products
                 UpdatedAt = prod.UpdatedAt,
             }).ToList();
 
-            return Ok(ApiResponse<List<ProductRead>>.SuccessResponse(result, 200, "successful"));
+            return Ok(ApiResponse<List<ProductReadDto>>.SuccessResponse(result, 200, "successful"));
         }
     }
 }

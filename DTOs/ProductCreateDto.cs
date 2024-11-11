@@ -7,7 +7,7 @@ using e_shop_server.Models;
 
 namespace e_shop_server.DTOs
 {
-    public class ProductCreate
+    public class ProductCreateDto
     {
         public Guid _id { get; set; }
         [Required( ErrorMessage = "Product name is required")]

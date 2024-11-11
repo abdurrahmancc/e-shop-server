@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace e_shop_server.DTOs
 {
-    public class ProductRead
+    public class ProductReadDto
     {
         public Guid _id { get; set; }
         [Required]
