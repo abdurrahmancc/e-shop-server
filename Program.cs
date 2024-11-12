@@ -1,4 +1,5 @@
 using e_shop_server.Controllers.Products;
+using e_shop_server.Interfaces;
 using e_shop_server.Models;
 using e_shop_server.Services;
 using e_shop_server.Utilities;
@@ -6,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddSingleton<ProductService>();
+builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddAutoMapper(typeof (Program));
 builder.Services.AddControllers();
 builder.Services.Configure<ApiBehaviorOptions>(Options=>{

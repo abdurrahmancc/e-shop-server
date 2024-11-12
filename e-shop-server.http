@@ -21,7 +21,7 @@ POST  http://localhost:5121/v1/api/products
 Content-Type: application/json
 
 {
-  "Name": "",
+  "Name": "fasfda",
   "FullName": "Apple Watch Series 6 A2292 (M00E3LL/A) 44mm Sport Band (GOLD)",
   "Price": 0,
   "RegularPrice": 32,
