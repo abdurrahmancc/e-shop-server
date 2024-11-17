@@ -20,32 +20,27 @@ namespace e_shop_server.Services
     }
 
 
-    public ItemsListWithPagination<List<ProductReadDto>> GetAllProducts(int currentPage, int pageSize)
+    public PaginatedResult<ProductReadDto> GetAllProducts(int pageNumber, int pageSize)
     {
       var totalItems = _products.Count;
       var totalPage = (int)Math.Ceiling((double)totalItems / pageSize);
-      currentPage = Math.Max(1, Math.Min(currentPage, totalPage));
+      pageNumber = Math.Max(1, Math.Min(pageNumber, totalPage));
 
-      var skip = (currentPage - 1) * pageSize;
+      var skip = (pageNumber - 1) * pageSize;
 
       var productList = _products.Skip(skip).Take(pageSize).ToList();
-
-      var pager = new PagerModel
+      var result = _mapper.Map<List<ProductReadDto>>(productList);
+      var pager = new PaginatedResult<ProductReadDto>
       {
+        Items = result,
         TotalItems = totalItems,
-        CurrentPage = currentPage,
+        PageNumber = pageNumber,
         PageSize = pageSize,
-        TotalPage = totalPage,
-        StartPage = Math.Max(1, currentPage - 2),
-        EndPage = Math.Min(totalPage, currentPage + 2)
+        StartPage = Math.Max(1, pageNumber - 2),
+        EndPage = Math.Min(totalPage, pageNumber + 2)
       };
 
-      return new ItemsListWithPagination<List<ProductReadDto>>
-      {
-        ItemsList = _mapper.Map<List<ProductReadDto>>(productList),
-        Pager = pager
-
-      };
+      return pager;
     }
 
 

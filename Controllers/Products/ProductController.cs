@@ -27,16 +27,16 @@ namespace e_shop_server.Controllers.Products
         //GET: v1/api/products/getProducts?currentPage=2&pageSize=5 get data with query params
         [HttpGet]
         [Route("getProducts")]
-        public ActionResult GetAllProducts(int currentPage = 1, int pageSize = 3)
+        public ActionResult GetAllProducts(int pageNumber = 1, int pageSize = 3)
         {
-            var responseData = _productService.GetAllProducts(currentPage, pageSize);
+            var responseData = _productService.GetAllProducts(pageNumber, pageSize);
 
-            if(responseData.ItemsList == null || !responseData.ItemsList.Any())
+            if(responseData.Items == null || !responseData.Items.Any())
             {
                 return NotFound(ApiResponse<Object>.ErrorResponse(new List<string> { $"dose not exit products" }, 404, "Validation failed"));
             }
 
-            return Ok(ApiResponse<ItemsListWithPagination<List<ProductReadDto>>>.SuccessResponse(responseData, 200, "Get successful"));
+            return Ok(ApiResponse<PaginatedResult<ProductReadDto>>.SuccessResponse(responseData, 200, "Get successful"));
         }
 
 

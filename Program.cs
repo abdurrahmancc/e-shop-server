@@ -1,15 +1,19 @@
 using e_shop_server.Controllers.Products;
+using e_shop_server.data;
 using e_shop_server.Interfaces;
 using e_shop_server.Models;
 using e_shop_server.Services;
 using e_shop_server.Utilities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddAutoMapper(typeof (Program));
 builder.Services.AddControllers();
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.Configure<ApiBehaviorOptions>(Options=>{
     Options.InvalidModelStateResponseFactory = context=>{
         var errors = context.ModelState

@@ -10,7 +10,7 @@ namespace e_shop_server.Interfaces
 {
     public interface IProductService
     {
-        ItemsListWithPagination<List<ProductReadDto>> GetAllProducts(int currentPage, int pageSize);
+        PaginatedResult<ProductReadDto> GetAllProducts(int currentPage, int pageSize);
 
         ProductReadDto? GetProductsByIdService(Guid Id);
 
