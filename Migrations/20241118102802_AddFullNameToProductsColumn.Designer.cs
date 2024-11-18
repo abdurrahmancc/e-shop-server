@@ -13,8 +13,8 @@ using e_shop_server.data;
 namespace e_shop_server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20241118061345_init")]
-    partial class init
+    [Migration("20241118102802_AddFullNameToProductsColumn")]
+    partial class AddFullNameToProductsColumn
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -47,6 +47,10 @@ namespace e_shop_server.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("FullName")
                         .IsRequired()
                         .HasColumnType("text");
 

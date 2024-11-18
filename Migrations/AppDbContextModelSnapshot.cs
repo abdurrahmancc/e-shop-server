@@ -47,6 +47,10 @@ namespace e_shop_server.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<List<string>>("Img")
                         .IsRequired()
                         .HasColumnType("text[]");

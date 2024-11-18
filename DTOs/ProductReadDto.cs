@@ -11,6 +11,7 @@ namespace e_shop_server.DTOs
         public Guid _id { get; set; }
         [Required]
         public string Name { get; set; }
+        public string? FullName { get; set; }
         [Required]
         public int Price { get; set; }
         public int Quantity { get; set; }
