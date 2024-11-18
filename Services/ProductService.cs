@@ -3,9 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using e_shop_server.data;
 using e_shop_server.DTOs;
 using e_shop_server.Interfaces;
 using e_shop_server.Models;
+using e_shop_server.Enums;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 
 namespace e_shop_server.Services
 {
@@ -13,24 +17,52 @@ namespace e_shop_server.Services
   {
     private static readonly List<ProductModel> _products = new List<ProductModel>();
     private readonly IMapper _mapper;
+    private readonly AppDbContext _appDbContext;
 
-    public ProductService(IMapper mapper)
+    public ProductService(IMapper mapper, AppDbContext appDbContext)
     {
       _mapper = mapper;
+      _appDbContext = appDbContext;
     }
 
 
-    public PaginatedResult<ProductReadDto> GetAllProducts(int pageNumber, int pageSize)
+    public async Task<PaginatedResult<ProductReadDto>> GetAllProducts(int pageNumber, int pageSize, string search, string sortOrder)
     {
-      var totalItems = _products.Count;
+
+      IQueryable<ProductModel> query = _appDbContext.Products;
+
+    if(!string.IsNullOrWhiteSpace(search)){
+      var formattedSearch = $"%{search.Trim().ToLower()}%";
+      query = query.Where(Prod=>EF.Functions.ILike(Prod.Name, formattedSearch) || EF.Functions.ILike(Prod.Description, formattedSearch));
+    }
+
+    if(!string.IsNullOrWhiteSpace(sortOrder)){
+      var formattedSortOrder = sortOrder.Trim().ToLowerInvariant();
+      if(Enum.TryParse<SortOrder>(formattedSortOrder, true, out var formattedSortOrderParse)){
+        query = formattedSortOrderParse switch
+        {
+          SortOrder.name_asc => query.OrderBy( P => P.Name),
+          SortOrder.name_desc => query.OrderByDescending( P => P.Name),
+          SortOrder.price_asc => query.OrderBy( P => P.Price ),
+          SortOrder.price_desc => query.OrderByDescending( P=> P.Price),
+          SortOrder.create_asc => query.OrderBy( P => P.CreatedAt),
+          SortOrder.create_desc => query.OrderByDescending( P=> P.CreatedAt),
+          _ => query.OrderBy( P=> P.Name)
+        };
+        
+      }
+    }
+
+
+      var totalItems = await query.CountAsync();
       var totalPage = (int)Math.Ceiling((double)totalItems / pageSize);
       pageNumber = Math.Max(1, Math.Min(pageNumber, totalPage));
 
       var skip = (pageNumber - 1) * pageSize;
 
-      var productList = _products.Skip(skip).Take(pageSize).ToList();
+      var productList =  query.Skip(skip).Take(pageSize).ToList();
       var result = _mapper.Map<List<ProductReadDto>>(productList);
-      var pager = new PaginatedResult<ProductReadDto>
+      return new PaginatedResult<ProductReadDto>
       {
         Items = result,
         TotalItems = totalItems,
@@ -40,20 +72,19 @@ namespace e_shop_server.Services
         EndPage = Math.Min(totalPage, pageNumber + 2)
       };
 
-      return pager;
     }
 
 
-    public ProductReadDto? GetProductsByIdService(Guid Id)
+    public async Task<ProductReadDto?> GetProductsByIdService(Guid Id)
     {
-      var result = _products.FirstOrDefault(prod => prod._id == Id);
+      var result = await _appDbContext.Products.FindAsync(Id);
 
       return result == null ? null : _mapper.Map<ProductReadDto>(result);
     }
 
 
 
-    public ProductReadDto CreateProductService(ProductCreateDto productData)
+    public async Task<ProductReadDto> CreateProductService(ProductCreateDto productData)
     {
       var newProduct = _mapper.Map<ProductModel>(productData);
 
@@ -61,14 +92,15 @@ namespace e_shop_server.Services
       newProduct.UpdatedAt = DateTime.UtcNow;
       newProduct.CreatedAt = DateTime.UtcNow;
       newProduct.Date = DateTime.UtcNow;
-      _products.Add(newProduct);
+      await _appDbContext.Products.AddAsync(newProduct);
+      await _appDbContext.SaveChangesAsync();
 
       return _mapper.Map<ProductReadDto>(newProduct);
     }
 
 
-    public List<ProductReadDto>? GetProductsBySearchValueService(string searchData){
-       var searchResultProducts = _products.Where(prod => prod.Name.Contains(searchData, StringComparison.OrdinalIgnoreCase)).ToList();
+    public async Task<List<ProductReadDto>?> GetProductsBySearchValueService(string searchData){
+       var searchResultProducts = await _appDbContext.Products.Where(prod => EF.Functions.ILike(prod.Name, $"%{searchData}%")).ToListAsync();
 
             if (searchResultProducts == null || !searchResultProducts.Any())
             {
@@ -80,8 +112,8 @@ namespace e_shop_server.Services
 
 
 
-    public List<ProductReadDto>? GetProductsByIdsService(List<Guid> Ids){
-      var foundProducts = _products.Where(prod => Ids.Contains(prod._id));
+    public async Task<List<ProductReadDto>?> GetProductsByIdsService(List<Guid> Ids){
+      var foundProducts =await _appDbContext.Products.Where(prod => Ids.Contains(prod._id)).ToListAsync();
             if (foundProducts == null || !foundProducts.Any())
             {
                 return null;
@@ -91,8 +123,8 @@ namespace e_shop_server.Services
     }
 
 
-    public List<ProductReadDto> GetProductsByPriceService(int minPrice, int maxPrice){
-      var foundProduct = _products.Where(prod => prod.Price >= minPrice && prod.Price <= maxPrice).ToList();
+    public async Task<List<ProductReadDto>> GetProductsByPriceService(int minPrice, int maxPrice){
+      var foundProduct = await _appDbContext.Products.Where(prod => prod.Price >= minPrice && prod.Price <= maxPrice).ToListAsync();
             if (foundProduct == null || !foundProduct.Any())
             {
               return  null;

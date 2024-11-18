@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace e_shop_server.Models
 {
+
     public class ProductModel
     {
+        [Key]
         public Guid _id { get; set; }
         [Required( ErrorMessage = "Product name is required")]
         [StringLength(100, MinimumLength =2, ErrorMessage ="Product name is must be at least 2 character long")]
@@ -28,16 +31,9 @@ namespace e_shop_server.Models
         public string Model { get; set; }
         public string SKU { get; set; }
         public List<string> ShortFeatures { get; set; }
-        public List<SpecificationSection> Specifications { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime CreatedAt { get; set; }
 
     }
-
-
-public class SpecificationSection
-{
-    public Dictionary<string, List<object>> Details { get; set; }
-}
 
 }

@@ -29,7 +29,6 @@ namespace e_shop_server.DTOs
         public string Model { get; set; }
         public string SKU { get; set; }
         public List<string> ShortFeatures { get; set; }
-        public List<SpecificationSection> Specifications { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime CreatedAt { get; set; }
     }
