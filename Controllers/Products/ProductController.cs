@@ -9,6 +9,7 @@ using e_shop_server.Interfaces;
 using e_shop_server.Models;
 using e_shop_server.Services;
 using e_shop_server.Utilities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -25,11 +26,12 @@ namespace e_shop_server.Controllers.Products
         }
 
         //GET: v1/api/products/getProducts?currentPage=2&pageSize=5 get data with query params
+        [Authorize(Roles = "Admin,User,Moderator")]
         [HttpGet]
         [Route("getProducts")]
-        public ActionResult GetAllProducts(int pageNumber = 1, int pageSize = 3)
+        public async Task<ActionResult> GetAllProducts([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 3)
         {
-            var responseData = _productService.GetAllProducts(pageNumber, pageSize);
+            var responseData = await _productService.GetAllProductsService(pageNumber, pageSize);
 
             if(responseData.Items == null || !responseData.Items.Any())
             {
@@ -62,10 +64,10 @@ namespace e_shop_server.Controllers.Products
         
         //POST: http://localhost:5121/v1/api/products create a product
         [HttpPost]
-        public IActionResult CreateProducts([FromBody] ProductCreateDto productData)
+        public async Task<IActionResult> CreateProducts([FromBody] ProductCreateDto productData)
         {
 
-            var result = _productService.CreateProductService(productData);
+            var result = await _productService.CreateProductService(productData);
             return Created(nameof(GetProductsById), ApiResponse<ProductReadDto>.SuccessResponse(result, 201, "Product create successful"));
         }
 

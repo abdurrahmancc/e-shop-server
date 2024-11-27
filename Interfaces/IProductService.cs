@@ -10,11 +10,11 @@ namespace e_shop_server.Interfaces
 {
     public interface IProductService
     {
-        PaginatedResult<ProductReadDto> GetAllProducts(int currentPage, int pageSize);
+        Task<PaginatedResult<ProductReadDto>> GetAllProductsService(int currentPage, int pageSize);
 
         ProductReadDto? GetProductsByIdService(Guid Id);
 
-        ProductReadDto CreateProductService(ProductCreateDto productData);
+        Task<ProductReadDto> CreateProductService(ProductCreateDto productData);
 
         List<ProductReadDto>? GetProductsBySearchValueService(string searchData);
 

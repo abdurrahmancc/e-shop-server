@@ -3,45 +3,65 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using e_shop_server.data;
 using e_shop_server.DTOs;
 using e_shop_server.Interfaces;
 using e_shop_server.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace e_shop_server.Services
 {
   public class ProductService: IProductService
   {
     private static readonly List<ProductModel> _products = new List<ProductModel>();
+    private readonly AppDbContext _appDbContext;
     private readonly IMapper _mapper;
 
-    public ProductService(IMapper mapper)
+    public ProductService(IMapper mapper, AppDbContext appDbContext)
     {
       _mapper = mapper;
+      _appDbContext = appDbContext;
     }
 
 
-    public PaginatedResult<ProductReadDto> GetAllProducts(int pageNumber, int pageSize)
+public async Task<PaginatedResult<ProductReadDto>> GetAllProductsService(int pageNumber, int pageSize)
+{
+    // Validate pageNumber and pageSize
+    if (pageNumber < 1) pageNumber = 1;
+    if (pageSize < 1) pageSize = 10;
+
+    // Get the total count of products
+    var totalItems = await _appDbContext.Products.CountAsync();
+
+    // Calculate total pages
+    var totalPage = (int)Math.Ceiling((double)totalItems / pageSize);
+
+    // Adjust pageNumber to stay within bounds
+    pageNumber = Math.Max(1, Math.Min(pageNumber, totalPage));
+
+    // Calculate the number of items to skip
+    var skip = (pageNumber - 1) * pageSize;
+
+    // Fetch paginated products
+    var productList = await _appDbContext.Products.Skip(skip).Take(pageSize).ToListAsync();
+
+    // Map to DTO
+    var result = _mapper.Map<List<ProductReadDto>>(productList);
+
+    // Build the paginated response
+    var pager = new PaginatedResult<ProductReadDto>
     {
-      var totalItems = _products.Count;
-      var totalPage = (int)Math.Ceiling((double)totalItems / pageSize);
-      pageNumber = Math.Max(1, Math.Min(pageNumber, totalPage));
-
-      var skip = (pageNumber - 1) * pageSize;
-
-      var productList = _products.Skip(skip).Take(pageSize).ToList();
-      var result = _mapper.Map<List<ProductReadDto>>(productList);
-      var pager = new PaginatedResult<ProductReadDto>
-      {
         Items = result,
         TotalItems = totalItems,
         PageNumber = pageNumber,
         PageSize = pageSize,
         StartPage = Math.Max(1, pageNumber - 2),
         EndPage = Math.Min(totalPage, pageNumber + 2)
-      };
+    };
 
-      return pager;
-    }
+    return pager;
+}
+
 
 
     public ProductReadDto? GetProductsByIdService(Guid Id)
@@ -53,7 +73,7 @@ namespace e_shop_server.Services
 
 
 
-    public ProductReadDto CreateProductService(ProductCreateDto productData)
+    public async Task<ProductReadDto> CreateProductService(ProductCreateDto productData)
     {
       var newProduct = _mapper.Map<ProductModel>(productData);
 
@@ -61,7 +81,8 @@ namespace e_shop_server.Services
       newProduct.UpdatedAt = DateTime.UtcNow;
       newProduct.CreatedAt = DateTime.UtcNow;
       newProduct.Date = DateTime.UtcNow;
-      _products.Add(newProduct);
+      await _appDbContext.AddAsync(newProduct);
+      await _appDbContext.SaveChangesAsync();
 
       return _mapper.Map<ProductReadDto>(newProduct);
     }
