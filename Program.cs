@@ -17,9 +17,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddAutoMapper(typeof (Program));
-builder.Services.AddControllers();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddControllers();
 builder.Services.Configure<ApiBehaviorOptions>(Options=>{
     Options.InvalidModelStateResponseFactory = context=>{
         var errors = context.ModelState

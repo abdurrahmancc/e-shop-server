@@ -13,6 +13,7 @@ namespace e_shop_server.DTOs
         [Required( ErrorMessage = "Product name is required")]
         [StringLength(100, MinimumLength =2, ErrorMessage ="Product name is must be at least 2 character long")]
         public string Name { get; set; }
+        public string? FullName { get; set; }
         public int Price { get; set; }
         public int RegularPrice { get; set; }
         public int Quantity { get; set; }

@@ -7,11 +7,13 @@ using e_shop_server.data;
 using e_shop_server.DTOs;
 using e_shop_server.Interfaces;
 using e_shop_server.Models;
+using e_shop_server.Enums;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 
 namespace e_shop_server.Services
 {
-  public class ProductService: IProductService
+  public class ProductService : IProductService
   {
     private static readonly List<ProductModel> _products = new List<ProductModel>();
     private readonly AppDbContext _appDbContext;
@@ -24,49 +26,60 @@ namespace e_shop_server.Services
     }
 
 
-public async Task<PaginatedResult<ProductReadDto>> GetAllProductsService(int pageNumber, int pageSize)
-{
-    // Validate pageNumber and pageSize
-    if (pageNumber < 1) pageNumber = 1;
-    if (pageSize < 1) pageSize = 10;
-
-    // Get the total count of products
-    var totalItems = await _appDbContext.Products.CountAsync();
-
-    // Calculate total pages
-    var totalPage = (int)Math.Ceiling((double)totalItems / pageSize);
-
-    // Adjust pageNumber to stay within bounds
-    pageNumber = Math.Max(1, Math.Min(pageNumber, totalPage));
-
-    // Calculate the number of items to skip
-    var skip = (pageNumber - 1) * pageSize;
-
-    // Fetch paginated products
-    var productList = await _appDbContext.Products.Skip(skip).Take(pageSize).ToListAsync();
-
-    // Map to DTO
-    var result = _mapper.Map<List<ProductReadDto>>(productList);
-
-    // Build the paginated response
-    var pager = new PaginatedResult<ProductReadDto>
+    public async Task<PaginatedResult<ProductReadDto>> GetAllProducts(int pageNumber, int pageSize, string search, string sortOrder)
     {
+
+      IQueryable<ProductModel> query = _appDbContext.Products;
+
+      if (!string.IsNullOrWhiteSpace(search))
+      {
+        var formattedSearch = $"%{search.Trim().ToLower()}%";
+        query = query.Where(Prod => EF.Functions.ILike(Prod.Name, formattedSearch) || EF.Functions.ILike(Prod.Description, formattedSearch));
+      }
+
+      if (!string.IsNullOrWhiteSpace(sortOrder))
+      {
+        var formattedSortOrder = sortOrder.Trim().ToLowerInvariant();
+        if (Enum.TryParse<SortOrder>(formattedSortOrder, true, out var formattedSortOrderParse))
+        {
+          query = formattedSortOrderParse switch
+          {
+            SortOrder.name_asc => query.OrderBy(P => P.Name),
+            SortOrder.name_desc => query.OrderByDescending(P => P.Name),
+            SortOrder.price_asc => query.OrderBy(P => P.Price),
+            SortOrder.price_desc => query.OrderByDescending(P => P.Price),
+            SortOrder.create_asc => query.OrderBy(P => P.CreatedAt),
+            SortOrder.create_desc => query.OrderByDescending(P => P.CreatedAt),
+            _ => query.OrderBy(P => P.Name)
+          };
+
+        }
+      }
+
+
+      var totalItems = await query.CountAsync();
+      var totalPage = (int)Math.Ceiling((double)totalItems / pageSize);
+      pageNumber = Math.Max(1, Math.Min(pageNumber, totalPage));
+
+      var skip = (pageNumber - 1) * pageSize;
+
+      var productList = query.Skip(skip).Take(pageSize).ToList();
+      var result = _mapper.Map<List<ProductReadDto>>(productList);
+      return new PaginatedResult<ProductReadDto>
+      {
         Items = result,
         TotalItems = totalItems,
         PageNumber = pageNumber,
         PageSize = pageSize,
         StartPage = Math.Max(1, pageNumber - 2),
         EndPage = Math.Min(totalPage, pageNumber + 2)
-    };
-
-    return pager;
-}
+      };
+    }
 
 
-
-    public ProductReadDto? GetProductsByIdService(Guid Id)
+    public async Task<ProductReadDto?> GetProductsByIdService(Guid Id)
     {
-      var result = _products.FirstOrDefault(prod => prod._id == Id);
+      var result = await _appDbContext.Products.FindAsync(Id);
 
       return result == null ? null : _mapper.Map<ProductReadDto>(result);
     }
@@ -81,45 +94,48 @@ public async Task<PaginatedResult<ProductReadDto>> GetAllProductsService(int pag
       newProduct.UpdatedAt = DateTime.UtcNow;
       newProduct.CreatedAt = DateTime.UtcNow;
       newProduct.Date = DateTime.UtcNow;
-      await _appDbContext.AddAsync(newProduct);
+      await _appDbContext.Products.AddAsync(newProduct);
       await _appDbContext.SaveChangesAsync();
 
       return _mapper.Map<ProductReadDto>(newProduct);
     }
 
 
-    public List<ProductReadDto>? GetProductsBySearchValueService(string searchData){
-       var searchResultProducts = _products.Where(prod => prod.Name.Contains(searchData, StringComparison.OrdinalIgnoreCase)).ToList();
+    public async Task<List<ProductReadDto>?> GetProductsBySearchValueService(string searchData)
+    {
+      var searchResultProducts = await _appDbContext.Products.Where(prod => EF.Functions.ILike(prod.Name, $"%{searchData}%")).ToListAsync();
 
-            if (searchResultProducts == null || !searchResultProducts.Any())
-            {
-                return null;
-            }
+      if (searchResultProducts == null || !searchResultProducts.Any())
+      {
+        return null;
+      }
 
-           return  _mapper.Map<List<ProductReadDto>>(searchResultProducts);
+      return _mapper.Map<List<ProductReadDto>>(searchResultProducts);
     }
 
 
 
-    public List<ProductReadDto>? GetProductsByIdsService(List<Guid> Ids){
-      var foundProducts = _products.Where(prod => Ids.Contains(prod._id));
-            if (foundProducts == null || !foundProducts.Any())
-            {
-                return null;
-            }
+    public async Task<List<ProductReadDto>?> GetProductsByIdsService(List<Guid> Ids)
+    {
+      var foundProducts = await _appDbContext.Products.Where(prod => Ids.Contains(prod._id)).ToListAsync();
+      if (foundProducts == null || !foundProducts.Any())
+      {
+        return null;
+      }
 
-            return _mapper.Map<List<ProductReadDto>>(foundProducts);
+      return _mapper.Map<List<ProductReadDto>>(foundProducts);
     }
 
 
-    public List<ProductReadDto> GetProductsByPriceService(int minPrice, int maxPrice){
-      var foundProduct = _products.Where(prod => prod.Price >= minPrice && prod.Price <= maxPrice).ToList();
-            if (foundProduct == null || !foundProduct.Any())
-            {
-              return  null;
+    public async Task<List<ProductReadDto>> GetProductsByPriceService(int minPrice, int maxPrice)
+    {
+      var foundProduct = await _appDbContext.Products.Where(prod => prod.Price >= minPrice && prod.Price <= maxPrice).ToListAsync();
+      if (foundProduct == null || !foundProduct.Any())
+      {
+        return null;
 
-            }
-           return _mapper.Map<List<ProductReadDto>>(foundProduct);
+      }
+      return _mapper.Map<List<ProductReadDto>>(foundProduct);
     }
 
   }

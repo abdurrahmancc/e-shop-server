@@ -29,9 +29,9 @@ namespace e_shop_server.Controllers.Products
         [Authorize(Roles = "Admin,User,Moderator")]
         [HttpGet]
         [Route("getProducts")]
-        public async Task<ActionResult> GetAllProducts([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 3)
+        public async Task<ActionResult> GetAllProducts([FromQuery] int pageNumber = 1, [FromQuery]  int pageSize = 3, [FromQuery]  string search = null, [FromQuery] string sortOrder=null)
         {
-            var responseData = await _productService.GetAllProductsService(pageNumber, pageSize);
+            var responseData = await _productService.GetAllProducts(pageNumber, pageSize, search, sortOrder);
 
             if(responseData.Items == null || !responseData.Items.Any())
             {
@@ -46,10 +46,10 @@ namespace e_shop_server.Controllers.Products
 
         //GET:  v1/api/products/GetProductsById/id--- get product by id
         [HttpGet("getProductsById/{Id:Guid}")]
-        public IActionResult GetProductsById(Guid Id)
+        public async Task<IActionResult> GetProductsById(Guid Id)
         {
 
-            var result = _productService.GetProductsByIdService(Id);
+            var result = await _productService.GetProductsByIdService(Id);
 
             if (result == null)
             {
@@ -75,9 +75,9 @@ namespace e_shop_server.Controllers.Products
         //GET: /v1/api/products/getProductSearchValue/?searchData=app get products by search value
         [HttpGet]
         [Route("getProductSearchValue")]
-        public IActionResult GetProductsBySearchValue(string searchData)
+        public async Task<IActionResult> GetProductsBySearchValue(string searchData)
         {
-            var result = _productService.GetProductsBySearchValueService(searchData);
+            var result = await _productService.GetProductsBySearchValueService(searchData);
             if (result == null || !result.Any())
             {
                 return NotFound(ApiResponse<Object>.ErrorResponse(new List<string> { $"Product with this {searchData} dose not exit" }, 404, "Validation failed"));
@@ -90,10 +90,10 @@ namespace e_shop_server.Controllers.Products
         //POST: v1/api/products/getProductsByIds get products by multiple ids
         [HttpPost]
         [Route("getProductsByIds")]
-        public IActionResult GetProductsByIds(List<Guid> Ids)
+        public async Task<IActionResult> GetProductsByIds(List<Guid> Ids)
         {
 
-            var foundProducts = _productService.GetProductsByIdsService(Ids);
+            var foundProducts = await _productService.GetProductsByIdsService(Ids);
             if (foundProducts == null || !foundProducts.Any())
             {
                 return NotFound(ApiResponse<Object>.ErrorResponse(new List<string> { $"Product with these ids dose not exit" }, 404, "Validation failed"));
@@ -106,9 +106,9 @@ namespace e_shop_server.Controllers.Products
         //GET: http://localhost:5121/v1/api/products/getProductByPrice?minPrice=10&maxPrice=100 get product by min and max prices
         [HttpGet]
         [Route("getProductByPrice")]
-        public IActionResult GetProductsByPrice(int minPrice = 5, int maxPrice = 1000)
+        public async Task<IActionResult> GetProductsByPrice(int minPrice = 5, int maxPrice = 1000)
         {
-            var foundProduct = _productService.GetProductsByPriceService(minPrice, maxPrice);
+            var foundProduct = await _productService.GetProductsByPriceService(minPrice, maxPrice);
             if (foundProduct == null || !foundProduct.Any())
             {
                 return NotFound(ApiResponse<Object>.ErrorResponse(new List<string> { $"Product with these prices dose not exit" }, 404, "Validation failed"));

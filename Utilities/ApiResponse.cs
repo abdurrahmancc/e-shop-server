@@ -11,7 +11,6 @@ namespace e_shop_server.Utilities
         public string Message { get; set; } = string.Empty;
         public T? Data { get; set; }
         public List<string>? Errors { get; set; }
-
         public int StatusCode { get; set; }
         public DateTime TimeStamp { get; set; }
 
